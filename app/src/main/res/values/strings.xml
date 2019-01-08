@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Digital FIFO</string>
+
+    <!-- Strings related to barcode scanner -->
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
+    <string name="ok">OK</string>
+
+    <string name="err_msg_nointernet">Please check your internet connection</string>
+
+    <!-- Strings related to MainActivity-->
+    <string name="scan_barcode_button">Scan QR code on the box</string>
+    <string name="no_barcode_captured">QR code not captured</string>
+    <string name="barcode_error_format">"Error reading QR code: %1$s"</string>
+
+    <string name="back_press_to_exit">press back again to exit the app</string>
+    <string name="logout">Logout</string>
+    <string name="line">Line :</string>
+    <string name="station">Station :</string>
+    <string name="failure">Failure</string>
+    <string name="success">Success</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="todo">TODO</string>
+    <string name="analysis_out">Analysis out</string>
+    <string name="analysis_in">Analysis in</string>
+    <string name="digital">Digital</string>
+    <string name="login">Login</string>
+    <string name="enter_line_name">Enter Line name</string>
+    <string name="enter_station_name">Enter Station name</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="loms_out">LOMS out</string>
+    <string name="loms_in">LOMS in</string>
+    <string name="quarantine_in">Quarantine in</string>
+    <string name="quarantine_out">Quarantine out</string>
+    <string name="enter_ip_address">enter ip address</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="what_was_the_fault">What was the fault ?</string>
+    <string name="enter_reason_here">Enter reason here</string>
+    <string name="submit">Submit</string>
+
+</resources>
