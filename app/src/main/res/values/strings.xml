@@ -39,5 +39,7 @@
     <string name="what_was_the_fault">What was the fault ?</string>
     <string name="enter_reason_here">Enter reason here</string>
     <string name="submit">Submit</string>
+    <string name="scrap">Scrap</string>
+    <string name="return_kanban">Return</string>
 
 </resources>

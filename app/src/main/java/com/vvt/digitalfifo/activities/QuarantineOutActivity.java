@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -51,6 +52,9 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
 
     AlertDialog.Builder builder;
     AlertDialog alertDialog;
+
+    String partNumber = null, quantity = null, kanbanNumber = null;
+    String lineName = null,stationName = null;
 
 
     @Override
@@ -164,7 +168,7 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
                     if (scannedtext != null) {
 
                         Log.d("capturedtext", scannedtext);
-                        String partNumber = null, quantity = null, kanbanNumber = null;
+
                         if (scannedtext.startsWith("@") && scannedtext.endsWith("@")) {
                             //Right QR code
                             scannedtext = scannedtext.replaceAll("@", "");
@@ -174,20 +178,21 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
 
                             String[] scannedDetails = scannedtext.split("#");
 
-                            String lineName = mLineName.getText().toString().trim();
-                            String stationName = mStationName.getText().toString().trim();
+                             lineName = mLineName.getText().toString().trim();
+                             stationName = mStationName.getText().toString().trim();
 
                             Log.d("scanneddetails", Arrays.toString(scannedDetails));
                             try {
                                 if (scannedDetails.length >= 2) {
                                     partNumber = scannedDetails[0].trim();
                                     kanbanNumber = scannedDetails[1].trim();
-                                    quantity = scannedDetails[3].trim();
+                                    quantity = scannedDetails[2].trim();
 
                                     mScannedText.setTextColor(getResources().getColor(R.color.design_default_color_primary_dark));
                                     mScannedText.setText("Part Number=> " + partNumber + "\nKanban Number=> " + kanbanNumber);
 
-                                    showActionPopup(lineName, stationName, partNumber, quantity, kanbanNumber);
+//                                    showSelectionPopup(lineName, stationName, partNumber, quantity, kanbanNumber);
+                                    callValidateKanbonAPI(lineName, stationName, partNumber, quantity, kanbanNumber);
 
                                 } else {
                                     Log.d("scanneddetails", "Invalid parameters");
@@ -220,6 +225,64 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
 
     }
 
+    private void showSelectionPopup(final String lineName, final String stationName, final String partNumber, final String quantity, final String kanbanNumber) {
+
+        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.scrap_or_return_layout, mRootlayout,false);
+
+        LinearLayout mScrap = dialogView.findViewById(R.id.vL_sor_scrap);
+        LinearLayout mReturn = dialogView.findViewById(R.id.vL_sor_return);
+        ImageView mcancel=dialogView.findViewById(R.id.vI_sor_cancel);
+
+        builder = new AlertDialog.Builder(QuarantineOutActivity.this);
+        builder.setView(dialogView);
+        builder.setCancelable(false);
+
+        alertDialog = builder.create();
+        alertDialog.show();
+
+        mScrap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    //hideKeyBoard();
+                    alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+                    alertDialog.dismiss();
+                    showActionPopup(lineName, stationName, partNumber, quantity, kanbanNumber);
+
+
+            }
+        });
+
+        mReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                    //hideKeyBoard();
+                    alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+                    alertDialog.dismiss();
+                callReturnKanbonAPI(lineName, stationName, partNumber, quantity, kanbanNumber);
+
+
+
+            }
+        });
+
+        mcancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                alertDialog.dismiss();
+
+            }
+        });
+
+
+    }
 
     private void showActionPopup(final String lineName, final String stationName, final String partNumber, final String quantity, final String kanbanNumber) {
 
@@ -251,7 +314,7 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
                     alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
                     alertDialog.dismiss();
-                    callValidateKanbonAPI(lineName, stationName, partNumber, quantity, kanbanNumber,enteredMessage);
+                    callScrapKanbonAPI(lineName, stationName, partNumber, quantity, kanbanNumber,enteredMessage);
 
                 }
 
@@ -270,7 +333,43 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
 
 
     }
-    private void callValidateKanbonAPI(String lineName, String stationName, String partNumber, String quantity, String kanbonNumber,String reason) {
+
+    /*Validate kanban case*/
+    private void callValidateKanbonAPI(String lineName, String stationName, String partNumber, String quantity, String kanbonNumber) {
+        // StationName stationName = new StationName(lineName);
+
+        KanbanScan kanbonScan = new KanbanScan(lineName, stationName, partNumber, kanbonNumber, quantity);
+        if (Utilities.isConnectedToInternet(getApplicationContext())) {
+
+            toggleVisibility(true, mProgressBar);
+
+            WebServices<KanbonScanResponse> webServices = new WebServices<KanbonScanResponse>(this);
+            webServices.validateKanbonQuarantine(Utilities.getBaseURL(this), WebServices.ApiType.validateKnbanQuarantine, kanbonScan);
+
+        } else {
+            Utilities.showToast(this, getResources().getString(R.string.err_msg_nointernet));
+        }
+    }
+
+    /*Return case*/
+    private void callReturnKanbonAPI(String lineName, String stationName, String partNumber, String quantity, String kanbonNumber) {
+        // StationName stationName = new StationName(lineName);
+
+        KanbanScan kanbonScan = new KanbanScan(lineName, stationName, partNumber, kanbonNumber, quantity);
+        if (Utilities.isConnectedToInternet(getApplicationContext())) {
+
+            toggleVisibility(true, mProgressBar);
+
+            WebServices<KanbonScanResponse> webServices = new WebServices<KanbonScanResponse>(this);
+            webServices.analysisAndLomsOut(Utilities.getBaseURL(this), WebServices.ApiType.analysisAndLomsOut, kanbonScan);
+
+        } else {
+            Utilities.showToast(this, getResources().getString(R.string.err_msg_nointernet));
+        }
+    }
+
+    /*Scrap case*/
+    private void callScrapKanbonAPI(String lineName, String stationName, String partNumber, String quantity, String kanbonNumber,String reason) {
 
         QuarantineOut quarantineOut= new QuarantineOut(lineName, stationName, partNumber, kanbonNumber, quantity,reason);
         if (Utilities.isConnectedToInternet(getApplicationContext())) {
@@ -303,6 +402,66 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onResponse(Object response, WebServices.ApiType URL, boolean isSucces, int code) {
         switch (URL) {
+
+            case validateKnbanQuarantine:
+                toggleVisibility(false, mProgressBar);
+                if (isSucces) {
+                    KanbonScanResponse kanbonScanResponse = (KanbonScanResponse) response;
+                    if (kanbonScanResponse != null) {
+                        if (kanbonScanResponse.getMessage() != null && kanbonScanResponse.getStatus() != null) {
+                            if (kanbonScanResponse.getStatus().equalsIgnoreCase("success")) {
+                                //Success case
+                               // showSuccessLayout(kanbonScanResponse.getMessage());
+                                showSelectionPopup(lineName, stationName, partNumber, quantity, kanbanNumber);
+
+                            } else {
+                                //Failure case
+                                showFailureLayout(kanbonScanResponse.getMessage());
+                            }
+
+                        } else {
+                            showSnackBar(this, "Something went wrong please try again");
+                        }
+
+                    } else {
+                        showSnackBar(this, "Server is busy");
+                    }
+
+                } else {
+                    //API call failed
+                    showSnackBar(this, "Server Timeout");
+                }
+                break;
+
+            case analysisAndLomsOut:
+                toggleVisibility(false, mProgressBar);
+                if (isSucces) {
+                    KanbonScanResponse kanbonScanResponse = (KanbonScanResponse) response;
+                    if (kanbonScanResponse != null) {
+                        if (kanbonScanResponse.getMessage() != null && kanbonScanResponse.getStatus() != null) {
+                            if (kanbonScanResponse.getStatus().equalsIgnoreCase("success")) {
+                                //Success case
+                                showSuccessLayout(kanbonScanResponse.getMessage());
+
+                            } else {
+                                //Failure case
+                                showFailureLayout(kanbonScanResponse.getMessage());
+                            }
+
+                        } else {
+                            showSnackBar(this, "Something went wrong please try again");
+                        }
+
+                    } else {
+                        showSnackBar(this, "Server is busy");
+                    }
+
+                } else {
+                    //API call failed
+                    showSnackBar(this, "Server Timeout");
+                }
+                break;
+
             case quarantineOut:
                 hideKeyBoard();
                 toggleVisibility(false, mProgressBar);
@@ -377,7 +536,7 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
                 hideSuccessAndfailureLayouts();
                 mHandler.removeCallbacksAndMessages(null);
             }
-        }, 20000);
+        }, 60000);
 
     }
 
@@ -392,7 +551,7 @@ public class QuarantineOutActivity extends AppCompatActivity implements View.OnC
                 hideSuccessAndfailureLayouts();
                 mHandler.removeCallbacksAndMessages(null);
             }
-        }, 20000);
+        }, 60000);
 
     }
 

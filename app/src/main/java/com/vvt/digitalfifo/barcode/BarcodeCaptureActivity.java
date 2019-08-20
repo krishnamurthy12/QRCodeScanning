@@ -303,7 +303,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity
         /*if (requestCode != RC_HANDLE_CAMERA_PERM) {
             Log.d(TAG, "Got unexpected permission result: " + requestCode);
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            return;
+            return_to_production;
         }
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -312,7 +312,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity
             boolean autoFocus = true;
             boolean useFlash = false;
             createCameraSource(autoFocus, useFlash);
-            return;
+            return_to_production;
         }*/
 
         Log.e(TAG, "Permission not granted: results len = " + grantResults.length +

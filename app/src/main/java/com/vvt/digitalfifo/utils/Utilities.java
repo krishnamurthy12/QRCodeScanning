@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -183,5 +184,7 @@ public class Utilities {
     /*
     * ------------------------------------------------------------------------------------------------------------------
     * */
+
+
 
 }

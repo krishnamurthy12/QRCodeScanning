@@ -32,6 +32,10 @@ public interface DigitalFIFOAPI {
     Call<LogInResponse> logIn(@Body LogIn logIn);
 
     @Headers("Content-Type: application/json")
+    @POST("Login/logindetailsofmasterdeivce")
+    Call<LogInResponse> logInMasterDevice(@Body LogIn logIn);
+
+    @Headers("Content-Type: application/json")
     @POST("fifo/flow")
     Call<KanbonScanResponse> validateKanbon(@Body KanbanScan kanbonScan);
 
@@ -42,6 +46,10 @@ public interface DigitalFIFOAPI {
     @Headers("Content-Type: application/json")
     @POST("optional/quarantine/")
     Call<KanbonScanResponse> quarantineOut(@Body QuarantineOut quarantineOut);
+
+    @Headers("Content-Type: application/json")
+    @POST("quarantine/check")
+    Call<KanbonScanResponse> validateKanbonQuarantine(@Body KanbanScan kanbonScan);
 
 
     @Headers("Content-Type: application/json")

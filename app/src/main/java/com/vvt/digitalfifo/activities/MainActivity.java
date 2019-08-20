@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 {
                                     partNumber=scannedDetails[0].trim();
                                     kanbanNumber=scannedDetails[1].trim();
-                                    quantity=scannedDetails[3].trim();
+                                    quantity = scannedDetails[2].trim();
 
                                     mScannedText.setTextColor(getResources().getColor(R.color.design_default_color_primary_dark));
                                     mScannedText.setText("Part Number=> "+partNumber+"\nKanban Number=> "+kanbanNumber);
@@ -474,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 hideSuccessAndfailureLayouts();
                 mHandler.removeCallbacksAndMessages(null);
             }
-        },20000);
+        },60000);
 
     }
     private void showFailureLayout(String failureMessage)
@@ -489,7 +489,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 hideSuccessAndfailureLayouts();
                 mHandler.removeCallbacksAndMessages(null);
             }
-        },20000);
+        },60000);
 
     }
 

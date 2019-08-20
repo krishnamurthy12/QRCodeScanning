@@ -43,7 +43,7 @@ public class WebServices<T> {
     private static OkHttpClient.Builder builder;
 
     public enum ApiType {
-        lineNames,stationNames,logIn,kanbonScan,analysisAndLomsOut,quarantineOut,logOut
+        lineNames,stationNames,logIn,kanbonScan,analysisAndLomsOut,quarantineOut,logOut,validateKnbanQuarantine
     }
 
     public WebServices(OnResponseListener<T> onResponseListner) {
@@ -96,7 +96,7 @@ public class WebServices<T> {
                 @Override
                 public okhttp3.Response intercept(Chain chain) throws IOException {
                     Request request = chain.request().newBuilder().addHeader("Content-Type", "application/json").build();
-                    return chain.proceed(request);
+                    return_to_production chain.proceed(request);
                 }
             });*/
 
@@ -170,7 +170,7 @@ public class WebServices<T> {
         Retrofit retrofit=getRetrofitClient(api);
 
         DigitalFIFOAPI digitalFIFOAPI=retrofit.create(DigitalFIFOAPI.class);
-        call=(Call<T>)digitalFIFOAPI.logIn(logIn);
+        call=(Call<T>)digitalFIFOAPI.logInMasterDevice(logIn);
         call.enqueue(new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, Response<T> response) {
@@ -196,6 +196,31 @@ public class WebServices<T> {
 
         DigitalFIFOAPI digitalFIFOAPI=retrofit.create(DigitalFIFOAPI.class);
         call=(Call<T>)digitalFIFOAPI.validateKanbon(kanbonScan);
+        call.enqueue(new Callback<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+                t=(T)response.body();
+                onResponseListner.onResponse(t, apiTypeVariable, true,response.code());
+                //Toast.makeText(context, "Success"+response.code(), Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<T> call, Throwable t) {
+                //Toast.makeText(context, "Failure", Toast.LENGTH_SHORT).show();
+                onResponseListner.onResponse(null, apiTypeVariable, false,0);
+
+            }
+        });
+    }
+
+    public void validateKanbonQuarantine(String api, ApiType apiTypes, KanbanScan kanbonScan)
+    {
+        apiTypeVariable = apiTypes;
+        Retrofit retrofit=getRetrofitClient(api);
+
+        DigitalFIFOAPI digitalFIFOAPI=retrofit.create(DigitalFIFOAPI.class);
+        call=(Call<T>)digitalFIFOAPI.validateKanbonQuarantine(kanbonScan);
         call.enqueue(new Callback<T>() {
             @Override
             public void onResponse(Call<T> call, Response<T> response) {

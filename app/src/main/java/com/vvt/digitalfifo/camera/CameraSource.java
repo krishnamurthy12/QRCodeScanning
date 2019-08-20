@@ -621,7 +621,7 @@ public class CameraSource {
     /**
      * Cancels any auto-focus function in progress.
      * Whether or not auto-focus is currently in progress,
-     * this function will return the focus position to the default.
+     * this function will return_to_production the focus position to the default.
      * If the camera does not support auto-focus, this is a no-op.
      *
      * @see #autoFocus(AutoFocusCallback)

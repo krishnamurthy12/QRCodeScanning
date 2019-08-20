@@ -34,7 +34,7 @@ import static com.vvt.digitalfifo.utils.Utilities.showSnackBar;
 public class AnalysisAndLomsOutActivity extends AppCompatActivity implements View.OnClickListener, OnResponseListener {
 
     LinearLayout mLogOut, mSuccessLayout, mFailureLayout, mScanLayout;
-    ProgressBar mProgressBar;
+        ProgressBar mProgressBar;
     TextView mLineName, mStationName, mScannedText, mSuccessMessage, mFailureMessage;
     Handler mHandler;
 
@@ -170,7 +170,7 @@ public class AnalysisAndLomsOutActivity extends AppCompatActivity implements Vie
                                 if (scannedDetails.length >= 2) {
                                     partNumber = scannedDetails[0].trim();
                                     kanbanNumber = scannedDetails[1].trim();
-                                    quantity = scannedDetails[3].trim();
+                                    quantity = scannedDetails[2].trim();
 
                                     mScannedText.setTextColor(getResources().getColor(R.color.design_default_color_primary_dark));
                                     mScannedText.setText("Part Number=> " + partNumber + "\nKanban Number=> " + kanbanNumber);
@@ -314,7 +314,7 @@ public class AnalysisAndLomsOutActivity extends AppCompatActivity implements Vie
                 hideSuccessAndfailureLayouts();
                 mHandler.removeCallbacksAndMessages(null);
             }
-        }, 20000);
+        }, 60000);
 
     }
 
@@ -329,7 +329,7 @@ public class AnalysisAndLomsOutActivity extends AppCompatActivity implements Vie
                 hideSuccessAndfailureLayouts();
                 mHandler.removeCallbacksAndMessages(null);
             }
-        }, 20000);
+        }, 60000);
 
     }
 
